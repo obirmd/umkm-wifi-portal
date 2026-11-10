@@ -270,3 +270,92 @@ tbody tr:hover { background: #f7f9f7; }
   .sb-nav { display: none; }
   .stats { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ===== profile page ===== */
+.profile-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 1.75rem;
+  max-width: 560px;
+}
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--line);
+}
+.profile-avatar-lg {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--green-600), var(--green-800));
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+.profile-header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.profile-header p {
+  margin-top: .2rem;
+  font-size: .85rem;
+}
+.profile-card h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+  color: var(--ink);
+}
+.profile-card label {
+  display: block;
+  margin-bottom: 1rem;
+  font-size: .85rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+.profile-card input {
+  display: block;
+  width: 100%;
+  margin-top: .35rem;
+  padding: .7rem .85rem;
+  background: #f7f9f8;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-size: .95rem;
+  color: var(--ink);
+  transition: border-color .15s, box-shadow .15s;
+}
+.profile-card input:focus {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(94,196,196,.15);
+}
+.profile-card input:disabled {
+  background: #eef3f0;
+  color: var(--muted);
+  cursor: not-allowed;
+}
+.profile-card .btn {
+  margin-top: .5rem;
+  background: var(--green-700);
+  color: #fff;
+}
+.profile-card .btn:hover {
+  background: var(--green-600);
+}
+.success-msg {
+  color: #27ae60;
+  font-size: .85rem;
+  margin: .2rem 0 .4rem;
+  padding: .5rem .7rem;
+  background: rgba(39,174,96,.1);
+  border-radius: 8px;
+  border: 1px solid rgba(39,174,96,.2);
+}
