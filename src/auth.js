@@ -61,3 +61,33 @@ export async function login(username, password) {
 export function logout() {
   localStorage.removeItem(SESSION_KEY);
 }
+
+// export hash for password verification from outside
+export { hash };
+
+export async function updateUsername(oldUsername, newUsername, password) {
+  newUsername = String(newUsername || '').trim();
+  if (newUsername.length < 3) throw new Error('Username baru minimal 3 karakter');
+  
+  const users = getUsers();
+  if (users.some(u => u.username.toLowerCase() === newUsername.toLowerCase()))
+    throw new Error('Username sudah digunakan');
+
+  const idx = users.findIndex(u => u.username === oldUsername);
+  if (idx === -1) throw new Error('User tidak ditemukan');
+  
+  // verify password
+  if (await hash(password, users[idx].salt) !== users[idx].hash)
+    throw new Error('Password salah');
+
+  users[idx].username = newUsername;
+  saveUsers(users);
+
+  // update session
+  const session = getSession();
+  if (session && session.username === oldUsername) {
+    session.username = newUsername;
+    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+  }
+  return { username: newUsername };
+}

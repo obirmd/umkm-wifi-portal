@@ -89,8 +89,8 @@ function dashboardView(s) {
     <aside class="sidebar">
       <div class="sb-brand"><span class="logo">◆</span> UKM Wifi</div>
       <nav class="sb-nav">
-        <a class="active">Dashboard</a>
-        <a>Profil</a>
+        <a href="#dashboard">Dashboard</a>
+        <a href="#profile">Profil</a>
         <a>Aktivitas</a>
         <a>Pengaturan</a>
       </nav>
@@ -125,6 +125,59 @@ function dashboardView(s) {
           <thead><tr><th>Username</th><th>Dibuat</th><th>Status</th></tr></thead>
           <tbody>${rows || '<tr><td colspan="3" class="muted">Belum ada akun</td></tr>'}</tbody>
         </table>
+      </section>
+    </main>
+  </div>`;
+}
+
+function profileView(s) {
+  return `
+  <div class="dash">
+    <aside class="sidebar">
+      <div class="sb-brand"><span class="logo">◆</span> UKM Wifi</div>
+      <nav class="sb-nav">
+        <a href="#dashboard">Dashboard</a>
+        <a href="#profile" class="active">Profil</a>
+        <a>Aktivitas</a>
+        <a>Pengaturan</a>
+      </nav>
+      <div class="sb-user">
+        <div class="avatar">${escapeHtml((s.username[0] || '?').toUpperCase())}</div>
+        <div>
+          <div class="uname">${escapeHtml(s.username)}</div>
+          <div class="muted small">Akun terverifikasi</div>
+        </div>
+        <button id="logout" class="btn-ghost" title="Logout">⎋</button>
+      </div>
+    </aside>
+    <main class="content">
+      <header class="topbar">
+        <h1>Profil</h1>
+        <p class="muted small">Kelola informasi akun Anda</p>
+      </header>
+      <section class="profile-card">
+        <div class="profile-header">
+          <div class="profile-avatar-lg">${escapeHtml((s.username[0] || '?').toUpperCase())}</div>
+          <div>
+            <h2>${escapeHtml(s.username)}</h2>
+            <p class="muted">Member sejak ${new Date(s.at).toLocaleDateString('id-ID', { dateStyle: 'long' })}</p>
+          </div>
+        </div>
+        <form id="profile-form" autocomplete="on">
+          <h3>Ubah Username</h3>
+          <label>Username Saat Ini
+            <input type="text" value="${escapeHtml(s.username)}" disabled>
+          </label>
+          <label>Username Baru
+            <input id="new-username" name="new-username" autocomplete="username" placeholder="Masukkan username baru" required minlength="3">
+          </label>
+          <label>Konfirmasi Password
+            <input id="confirm-password" type="password" name="confirm-password" autocomplete="current-password" placeholder="Masukkan password untuk konfirmasi" required>
+          </label>
+          <p id="error" class="error" hidden></p>
+          <p id="success" class="success-msg" hidden></p>
+          <button class="btn" type="submit">Simpan Perubahan</button>
+        </form>
       </section>
     </main>
   </div>`;
@@ -171,7 +224,7 @@ function resolveRoute() {
   let route = location.hash.replace('#', '');
   if (!route) route = session ? 'dashboard' : 'login';
   if (session && (route === 'login' || route === 'register')) route = 'dashboard';
-  if (!session && route === 'dashboard') route = 'login';
+  if (!session && (route === 'dashboard' || route === 'profile')) route = 'login';
   return { route, session };
 }
 
@@ -179,6 +232,7 @@ function render() {
   const { route, session } = resolveRoute();
   app.innerHTML =
     route === 'register' ? registerView()
+    : route === 'profile' ? profileView(session)
     : route === 'dashboard' ? dashboardView(session)
     : loginView();
   bind(route);
@@ -191,6 +245,9 @@ function bind(route) {
     el('register-form').addEventListener('submit', onRegister);
   } else if (route === 'dashboard') {
     el('logout').addEventListener('click', () => { auth.logout(); location.hash = '#login'; });
+  } else if (route === 'profile') {
+    el('logout').addEventListener('click', () => { auth.logout(); location.hash = '#login'; });
+    el('profile-form').addEventListener('submit', onProfileUpdate);
   }
 }
 
@@ -213,6 +270,32 @@ async function onRegister(e) {
   try {
     await auth.register(el('username').value, p1);
     location.hash = '#login';
+  } catch (err) {
+    setError(err.message);
+  }
+}
+
+function setSuccess(msg) {
+  const box = el('success');
+  if (box) { box.textContent = msg || ''; box.hidden = !msg; }
+  const errBox = el('error');
+  if (errBox) { errBox.hidden = true; }
+}
+
+async function onProfileUpdate(e) {
+  e.preventDefault();
+  setError('');
+  setSuccess('');
+  const session = auth.getSession();
+  const newUsername = el('new-username').value;
+  const password = el('confirm-password').value;
+
+  if (!session) return setError('Sesi tidak valid, silakan login ulang');
+
+  try {
+    await auth.updateUsername(session.username, newUsername, password);
+    setSuccess(`Username berhasil diubah menjadi "${newUsername}"`);
+    setTimeout(() => location.hash = '#profile', 1500);
   } catch (err) {
     setError(err.message);
   }
