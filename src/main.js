@@ -91,8 +91,8 @@ function dashboardView(s) {
       <nav class="sb-nav">
         <a href="#dashboard">Dashboard</a>
         <a href="#profile">Profil</a>
-        <a>Aktivitas</a>
-        <a>Pengaturan</a>
+        <a href="#aktivitas">Aktivitas</a>
+        <a href="#pengaturan">Pengaturan</a>
       </nav>
       <div class="sb-user">
         <div class="avatar">${escapeHtml((s.username[0] || '?').toUpperCase())}</div>
@@ -138,8 +138,8 @@ function profileView(s) {
       <nav class="sb-nav">
         <a href="#dashboard">Dashboard</a>
         <a href="#profile" class="active">Profil</a>
-        <a>Aktivitas</a>
-        <a>Pengaturan</a>
+        <a href="#aktivitas">Aktivitas</a>
+        <a href="#pengaturan">Pengaturan</a>
       </nav>
       <div class="sb-user">
         <div class="avatar">${escapeHtml((s.username[0] || '?').toUpperCase())}</div>
